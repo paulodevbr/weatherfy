@@ -1,11 +1,11 @@
 import React from 'react';
 import { ActivityIndicator, View } from 'react-native';
-import AuthRoutes from './auth.routes';
-import { useAuth } from '../hooks/auth';
+import LocationRoutes from './location.routes';
 import AppRoutes from './app.routes';
+import { useLocation } from '../hooks/location';
 
 const Routes: React.FC = () => {
-  const { user, loading } = useAuth();
+  const { location, loading } = useLocation();
 
   if (loading) {
     return (
@@ -15,7 +15,7 @@ const Routes: React.FC = () => {
     );
   }
 
-  return user ? <AppRoutes /> : <AuthRoutes />;
+  return location ? <AppRoutes /> : <LocationRoutes />;
 };
 
 export default Routes;

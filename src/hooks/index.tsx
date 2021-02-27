@@ -1,6 +1,9 @@
 import React from 'react';
-import { AuthProvider } from './auth';
+import { LocationProvider } from './location';
+import { WeatherProvider } from './weather';
 
 export const AppProvider: React.FC = ({ children }) => (
-  <AuthProvider>{children}</AuthProvider>
+  <WeatherProvider>
+    <LocationProvider>{children}</LocationProvider>
+  </WeatherProvider>
 );
