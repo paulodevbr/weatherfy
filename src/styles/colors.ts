@@ -1,7 +1,7 @@
 export const colors = {
   primary: '#312e38',
   sunny: ['#ffbf00', '#ff7700'],
-  cloudy: ['#cacaca', '#a0a0a0'],
+  clouds: ['#9dc5d4', '#52818f'],
   rainy: ['#aeaeae', '#404040'],
   thunderstorm: ['#727272', '#161616'],
   snow: ['#bbd9d3', '#80948e'],
@@ -10,4 +10,5 @@ export const colors = {
   rainyNight: ['#2b2b54', '#131330'],
   thunderstormNight: ['#191b40', '#000005'],
   snowNight: ['#49497a', '#1b1e34'],
+  sunnyMorning: ['#9d8800', '#008c9f'],
 };

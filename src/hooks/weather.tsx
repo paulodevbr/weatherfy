@@ -155,8 +155,8 @@ export const WeatherProvider: React.FC = ({ children }) => {
 
       const newCurrentWeather: WeatherLocation = {
         city: weatherLocationResponse.name,
-        time: new Date(),
-        main: currentWeather.main,
+        time: new Date(Date.now()),
+        main: currentWeather.main.toLowerCase(),
         description: upperCaseFirstLetter(currentWeather.description),
         temp: `${Math.floor(current.temp).toString()}°`,
         tempMax: `${Math.floor(daily[0].temp.max).toString()}°`,
@@ -168,7 +168,7 @@ export const WeatherProvider: React.FC = ({ children }) => {
 
       const newHourlyWeather: Weather[] = hourly.map(hourWeather => ({
         time: new Date(hourWeather.dt * 1000 - timezone_offset),
-        main: hourWeather.weather[0].main,
+        main: hourWeather.weather[0].main.toLowerCase(),
         description: upperCaseFirstLetter(hourWeather.weather[0].description),
         temp: `${Math.floor(hourWeather.temp).toString()}°`,
         tempMax: `${Math.floor(hourWeather.temp_max).toString()}°`,
@@ -182,7 +182,7 @@ export const WeatherProvider: React.FC = ({ children }) => {
         .filter((_, i) => i > 0 && i <= 7)
         .map(dayWeather => ({
           time: new Date(dayWeather.dt * 1000 - timezone_offset),
-          main: dayWeather.weather[0].main,
+          main: dayWeather.weather[0].main.toLowerCase(),
           description: upperCaseFirstLetter(dayWeather.weather[0].description),
           temp: `${Math.floor(dayWeather.temp.day).toString()}°`,
           tempMax: `${Math.floor(dayWeather.temp.max).toString()}°`,
