@@ -8,7 +8,7 @@ interface TextProps {
 
 export const Container = styled.View`
   flex: 1;
-  padding: 30px 30px ${Platform.OS === 'android' ? 150 : 40}px;
+  padding: 30px 16px ${Platform.OS === 'android' ? 150 : 40}px;
 `;
 
 export const CurrentWeatherView = styled.View`
@@ -53,7 +53,7 @@ export const ImgTemp = styled.View`
 export const HourTemps = styled.View`
   width: 100%;
   align-items: flex-start;
-  justify-content: space-between;
+  justify-content: flex-start;
   padding-top: 18px;
   padding-bottom: 18px;
   border-top-width: 0.5px;
@@ -61,6 +61,11 @@ export const HourTemps = styled.View`
   border-bottom-width: 0.5px;
   border-bottom-color: #fff;
   flex-direction: row;
+`;
+
+export const HourTemp = styled.View`
+  padding-right: 12px;
+  padding-left: 12px;
 `;
 
 export const HourText = styled(TextSubtitle)`
