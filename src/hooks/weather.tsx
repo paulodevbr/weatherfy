@@ -248,7 +248,14 @@ export const WeatherProvider: React.FC = ({ children }) => {
       setLoading(false);
     }
 
-    if (!init && currentLocation && !currentLocation.loading) {
+    const hasLocation =
+      currentLocation &&
+      currentLocation.location &&
+      currentLocation.location.longitude &&
+      currentLocation.location.latitude &&
+      !currentLocation.loading;
+
+    if (!init && hasLocation) {
       setInit(true);
       loadStorageData();
     }

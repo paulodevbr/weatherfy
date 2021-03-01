@@ -1,14 +1,9 @@
-import React from 'react';
-import {
-  ActivityIndicator,
-  FlatList,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import IconFeather from 'react-native-vector-icons/Feather';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
-import { format, isSameDay } from 'date-fns';
+import { format, isSameDay, isSameMinute } from 'date-fns';
 
 import { useNavigation } from '@react-navigation/native';
 import { useLocation } from '../../hooks/location';
@@ -18,7 +13,6 @@ import {
   CurrentWeatherInfo,
   MainTemp,
   ImgTemp,
-  WeekDayText,
   ActionButton,
 } from './styles';
 import { colors } from '../../styles/colors';
@@ -34,9 +28,17 @@ import TextTitle from '../../components/TextTitle';
 import { ListWeatherOfWeek } from '../../components/ListWeatherOfWeek';
 
 const Dashboard: React.FC = () => {
+  const [updated, setUpdated] = useState<Date | null>(null);
   const { clearLocation } = useLocation();
   const { loading, current, getWeather, hourly, daily } = useWeather();
   const { navigate } = useNavigation();
+
+  useEffect(() => {
+    if (!current && (!updated || !isSameMinute(new Date(), updated))) {
+      getWeather();
+      setUpdated(new Date());
+    }
+  }, [current, getWeather, updated]);
 
   const hoursToday =
     hourly && hourly.length > 0
@@ -45,7 +47,7 @@ const Dashboard: React.FC = () => {
         )
       : [];
 
-  if (loading) {
+  if (loading || !current) {
     return (
       <LinearGradient
         colors={colors.default}
@@ -56,16 +58,16 @@ const Dashboard: React.FC = () => {
     );
   }
 
-  if (!current) {
-    return (
-      <LinearGradient
-        colors={colors.default}
-        style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
-      >
-        <TextTitle>Não foi possível buscar dados do clima</TextTitle>
-      </LinearGradient>
-    );
-  }
+  // if (!current) {
+  //   return (
+  //     <LinearGradient
+  //       colors={colors.default}
+  //       style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+  //     >
+  //       <TextTitle>Não foi possível buscar dados do clima</TextTitle>
+  //     </LinearGradient>
+  //   );
+  // }
   return (
     <LinearGradient colors={getWeatherColor(current.main)} style={{ flex: 1 }}>
       <Container>

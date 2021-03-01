@@ -107,7 +107,7 @@ const DayOfWeek: React.FC<Props> = ({ route }) => {
             />
           </ImgTemp>
         </CurrentWeatherView>
-        <Row full withSpaceBetween height={40}>
+        <Row full withSpaceBetween height="50px">
           <Row width="30%">
             <IconFeather name="wind" size={24} color="white" />
             <TextSubtitle>{weatherDay.windSpeed}</TextSubtitle>

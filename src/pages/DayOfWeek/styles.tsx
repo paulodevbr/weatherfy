@@ -62,9 +62,9 @@ export const ActionButton: React.FC<ButtonProps> = ({ children, ...props }) => (
   <Button
     {...props}
     style={{
-      height: 50,
-      width: 50,
-      borderRadius: 50 / 2,
+      height: 60,
+      width: 60,
+      borderRadius: 60 / 2,
       backgroundColor: 'rgba(255,255,255,0.3)',
     }}
   >

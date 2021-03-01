@@ -7,6 +7,7 @@ import React, {
 } from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
 import Geolocation from '@react-native-community/geolocation';
+import { Alert } from 'react-native';
 
 interface LocationState {
   location: Location;
@@ -56,18 +57,25 @@ export const LocationProvider: React.FC = ({ children }) => {
   }, [init, setInit]);
 
   const getCurrentLocation = useCallback(async () => {
-    await Geolocation.getCurrentPosition(async (info: InfoCurrentLocation) => {
-      const { latitude, longitude } = info.coords;
-      setLoading(true);
+    try {
+      await Geolocation.getCurrentPosition(
+        async (info: InfoCurrentLocation) => {
+          const { latitude, longitude } = info.coords;
+          setLoading(true);
 
-      const location: Location = { latitude, longitude };
-      await AsyncStorage.multiSet([
-        ['@Weatherfy:location', JSON.stringify(location)],
-      ]);
-      setData({ location });
+          const location: Location = { latitude, longitude };
+          await AsyncStorage.multiSet([
+            ['@Weatherfy:location', JSON.stringify(location)],
+          ]);
+          setData({ location });
 
-      setLoading(false);
-    });
+          setLoading(false);
+        },
+      );
+    } catch (e) {
+      Alert.alert('Sem conexão', 'Não foi possível buscar a localização');
+      console.log(e);
+    }
   }, []);
 
   const clearLocation = useCallback(async () => {
