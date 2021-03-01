@@ -1,6 +1,9 @@
 # Weatherfy
 Get weather where you are in realtime
 
+# Download
+[[Android] First version](https://github.com/pauloXtr3m/weatherfy/releases/tag/0.1)
+
 # Setup
 
 ### Environment
@@ -9,6 +12,7 @@ Get weather where you are in realtime
 * Create an account in [OpenWeather](https://openweathermap.org/)
 * Copy you token in [API keys menu](https://home.openweathermap.org/api_keys)
 * Paste your token in your `.env` file, `API_TOKEN` variable.
+
 ### Install dependencies
 
 ```yarn```
