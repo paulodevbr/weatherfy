@@ -1,7 +1,6 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import AskLocation from '../pages/AskLocation';
-import SignUp from '../pages/SignUp';
 
 const Location = createStackNavigator();
 

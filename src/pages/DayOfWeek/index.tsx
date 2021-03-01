@@ -1,41 +1,41 @@
 import React from 'react';
-import {
-  ActivityIndicator,
-  FlatList,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import IconFeather from 'react-native-vector-icons/Feather';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
-import { format } from 'date-fns';
-
-import { useNavigation } from '@react-navigation/native';
-import { useLocation } from '../../hooks/location';
+import { format, isSameDay } from 'date-fns';
+import { useNavigation, Route } from '@react-navigation/native';
 import {
   CurrentWeatherView,
   Container,
   CurrentWeatherInfo,
   MainTemp,
   ImgTemp,
-  WeekDayText,
   ActionButton,
 } from './styles';
 import { colors } from '../../styles/colors';
 import { Row } from '../../components/Row';
-import { useWeather } from '../../hooks/weather';
+import { useWeather, Weather } from '../../hooks/weather';
 import getWeatherColor from '../../utils/getWeatherColor';
 import getWeatherIcon from '../../utils/getWeatherIcon';
 import { BrazilLocale } from '../../utils/BrazilLocale';
 import upperCaseFirstLetter from '../../utils/upperCaseFirstLetter';
+import TextTitle from '../../components/TextTitle';
 import { ListWeatherHourly } from '../../components/ListWeatherHourly';
 import TextSubtitle from '../../components/TextSubtitle';
-import TextTitle from '../../components/TextTitle';
 
-const Dashboard: React.FC = () => {
-  const { clearLocation } = useLocation();
-  const { loading, current, getWeather, hourly, daily } = useWeather();
-  const { navigate } = useNavigation();
+interface Props {
+  route: Route<'DayOfWeek', { weatherDay: Weather }>;
+}
+
+const DayOfWeek: React.FC<Props> = ({ route }) => {
+  const { loading, current, hourly } = useWeather();
+  const { goBack } = useNavigation();
+  const { weatherDay } = route.params;
+
+  const hoursFromDay = hourly.filter(hourWeather =>
+    isSameDay(new Date(hourWeather.time), new Date(weatherDay.time)),
+  );
 
   if (loading) {
     return (
@@ -48,7 +48,7 @@ const Dashboard: React.FC = () => {
     );
   }
 
-  if (!current) {
+  if (!weatherDay) {
     return (
       <LinearGradient
         colors={colors.default}
@@ -58,13 +58,21 @@ const Dashboard: React.FC = () => {
       </LinearGradient>
     );
   }
+
   return (
-    <LinearGradient colors={getWeatherColor(current.main)} style={{ flex: 1 }}>
+    <LinearGradient
+      colors={getWeatherColor(weatherDay.main)}
+      style={{ flex: 1 }}
+    >
       <Container>
         <Row full center height="100px">
           <TextSubtitle>
             {upperCaseFirstLetter(
-              format(new Date(), "eee, dd 'de' MMMM", BrazilLocale),
+              format(
+                new Date(weatherDay.time),
+                "eee, dd 'de' MMMM",
+                BrazilLocale,
+              ),
             )}
           </TextSubtitle>
         </Row>
@@ -73,72 +81,40 @@ const Dashboard: React.FC = () => {
           <CurrentWeatherInfo>
             <TextTitle>{current.city}</TextTitle>
             <View>
-              <MainTemp>{current.temp}</MainTemp>
+              <MainTemp>{weatherDay.temp}</MainTemp>
               <Row>
                 <Row>
                   <IconFeather name="chevron-up" color="white" size={18} />
-                  <TextSubtitle>{current.tempMax}</TextSubtitle>
+                  <TextSubtitle>{weatherDay.tempMax}</TextSubtitle>
                 </Row>
                 <Row>
                   <IconFeather name="chevron-down" color="white" size={18} />
-                  <TextSubtitle>{current.tempMin}</TextSubtitle>
+                  <TextSubtitle>{weatherDay.tempMin}</TextSubtitle>
                 </Row>
               </Row>
             </View>
 
             <View>
-              <TextTitle>{current.description}</TextTitle>
-              <TextSubtitle>{`Sensação térmica ${current.feelsLike}`}</TextSubtitle>
+              <TextTitle>{weatherDay.description}</TextTitle>
+              <TextSubtitle>{`Sensação térmica ${weatherDay.feelsLike}`}</TextSubtitle>
             </View>
           </CurrentWeatherInfo>
           <ImgTemp>
             <IconIonicons
-              name={getWeatherIcon(current.main)}
+              name={getWeatherIcon(weatherDay.main)}
               size={300}
               color="white"
             />
           </ImgTemp>
         </CurrentWeatherView>
-        <ListWeatherHourly weatherByHour={hourly} />
-        <FlatList
-          data={daily}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              onPress={() => navigate('DayOfWeek', { weatherDay: item })}
-            >
-              <Row key={item.time.toString()} full withSpaceBetween>
-                <WeekDayText>
-                  {upperCaseFirstLetter(
-                    format(new Date(item.time), 'eee', BrazilLocale),
-                  )}
-                </WeekDayText>
-                <IconIonicons
-                  name={getWeatherIcon(item.main)}
-                  size={24}
-                  color="white"
-                />
-                <Row width="15%" height="40px" withSpaceBetween>
-                  <TextSubtitle fontWeight="bold">{item.tempMax}</TextSubtitle>
-                  <TextSubtitle opacity="0.8">{item.tempMin}</TextSubtitle>
-                </Row>
-              </Row>
-            </TouchableOpacity>
-          )}
-          style={{
-            marginTop: 16,
-            minHeight: '24%',
-          }}
-        />
+        <ListWeatherHourly weatherByHour={hoursFromDay} />
         <Row full withSpaceBetween height="100px">
-          <ActionButton onPress={() => clearLocation()}>
+          <ActionButton onPress={() => goBack()}>
             <IconIonicons
               name="return-up-back-outline"
               size={25}
               color="white"
             />
-          </ActionButton>
-          <ActionButton onPress={() => getWeather()}>
-            <IconIonicons name="refresh-outline" size={25} color="white" />
           </ActionButton>
         </Row>
       </Container>
@@ -146,4 +122,4 @@ const Dashboard: React.FC = () => {
   );
 };
 
-export default Dashboard;
+export default DayOfWeek;

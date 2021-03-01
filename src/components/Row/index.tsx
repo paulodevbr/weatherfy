@@ -3,6 +3,7 @@ import styled from 'styled-components/native';
 interface RowProps {
   full?: boolean;
   withSpaceBetween?: boolean;
+  center?: boolean;
   width?: string;
   height?: string;
 }
@@ -14,4 +15,6 @@ export const Row = styled.View<RowProps>`
   flex-direction: row;
   align-items: center;
   ${props => (props.withSpaceBetween ? 'justify-content: space-between;' : '')}
+  ${props => (props.center ? 'justify-content: center;' : '')}
+  ${props => (props.center ? 'align-items: center;' : '')}
 `;

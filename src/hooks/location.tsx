@@ -12,7 +12,7 @@ interface LocationState {
   location: Location;
 }
 
-interface Location {
+export interface Location {
   latitude: number;
   longitude: number;
 }

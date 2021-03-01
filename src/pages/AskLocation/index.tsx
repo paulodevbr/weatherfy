@@ -11,14 +11,20 @@ import {
 import Icon from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
 
+import LinearGradient from 'react-native-linear-gradient';
 import logoImg from '../../assets/logo.png';
 
-import { Container, SubmitView, Title } from './styles';
-import Button from '../../components/Button';
+import {
+  Container,
+  Description,
+  SubmitButton,
+  SubmitView,
+  Title,
+} from './styles';
 import { useLocation } from '../../hooks/location';
+import { colors } from '../../styles/colors';
 
 const AskLocation: React.FC = () => {
-  const navigation = useNavigation();
   const { getCurrentLocation } = useLocation();
 
   const handleGetLocation = useCallback(async (): Promise<void> => {
@@ -38,18 +44,23 @@ const AskLocation: React.FC = () => {
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{ flex: 1 }}
       >
-        <Container>
-          <Image source={logoImg} />
-          <View>
-            <Title>Precisamos da sua localização</Title>
-          </View>
-          <SubmitView>
-            <Button onPress={() => handleGetLocation()}>
-              <Icon name="map-pin" size={20} />
-              Buscar localização
-            </Button>
-          </SubmitView>
-        </Container>
+        <LinearGradient colors={colors.default} style={{ flex: 1 }}>
+          <Container>
+            <Image source={logoImg} />
+            <View>
+              <Title>Precisamos da sua localização</Title>
+              <Description>
+                Precisamos da sua localização para buscar os dados de clima
+              </Description>
+            </View>
+            <SubmitView>
+              <SubmitButton onPress={() => handleGetLocation()}>
+                <Icon name="map-pin" size={20} />
+                Buscar localização
+              </SubmitButton>
+            </SubmitView>
+          </Container>
+        </LinearGradient>
       </ScrollView>
     </>
   );

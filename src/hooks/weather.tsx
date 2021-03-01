@@ -6,7 +6,7 @@ import React, {
   useEffect,
 } from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
-import api, { apiConfig } from '../services/api';
+import api, { getConfigApi } from '../services/api';
 import { useLocation } from './location';
 import upperCaseFirstLetter from '../utils/upperCaseFirstLetter';
 
@@ -16,8 +16,8 @@ interface WeatherState {
   daily: WeatherDaily[];
 }
 
-interface Weather {
-  time: Date;
+export interface Weather {
+  time: number;
   main: string;
   description: string;
   temp: string;
@@ -119,34 +119,21 @@ export const WeatherProvider: React.FC = ({ children }) => {
   const currentLocation = useLocation();
 
   const getWeather = useCallback(async () => {
-    const configApiOneCall = {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      params: {
-        lat: currentLocation.location.latitude,
-        lon: currentLocation.location.longitude,
-        ...apiConfig.onecall.params,
-      },
-    };
-    const configApiWeather = {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      params: {
-        lat: currentLocation.location.latitude,
-        lon: currentLocation.location.longitude,
-        ...apiConfig.weather.params,
-      },
-    };
     setLoading(true);
+    const { location } = currentLocation;
     try {
       const weatherLocationResponse = (
-        await api.get<WeatherLocationResponse>('/weather', configApiWeather)
+        await api.get<WeatherLocationResponse>(
+          '/weather',
+          getConfigApi('weather', location),
+        )
       ).data;
 
       const weatherResponse = (
-        await api.get<WeatherResponse>('/onecall', configApiOneCall)
+        await api.get<WeatherResponse>(
+          '/onecall',
+          getConfigApi('onecall', location),
+        )
       ).data;
 
       const { current, hourly, daily, timezone_offset } = weatherResponse;
@@ -155,7 +142,7 @@ export const WeatherProvider: React.FC = ({ children }) => {
 
       const newCurrentWeather: WeatherLocation = {
         city: weatherLocationResponse.name,
-        time: new Date(Date.now()),
+        time: Date.now(),
         main: currentWeather.main.toLowerCase(),
         description: upperCaseFirstLetter(currentWeather.description),
         temp: `${Math.floor(current.temp).toString()}°`,
@@ -167,7 +154,7 @@ export const WeatherProvider: React.FC = ({ children }) => {
       };
 
       const newHourlyWeather: Weather[] = hourly.map(hourWeather => ({
-        time: new Date(hourWeather.dt * 1000 - timezone_offset),
+        time: hourWeather.dt * 1000 - timezone_offset,
         main: hourWeather.weather[0].main.toLowerCase(),
         description: upperCaseFirstLetter(hourWeather.weather[0].description),
         temp: `${Math.floor(hourWeather.temp).toString()}°`,
@@ -181,7 +168,7 @@ export const WeatherProvider: React.FC = ({ children }) => {
       const newDailyWeather: WeatherDaily[] = daily
         .filter((_, i) => i > 0 && i <= 7)
         .map(dayWeather => ({
-          time: new Date(dayWeather.dt * 1000 - timezone_offset),
+          time: dayWeather.dt * 1000 - timezone_offset,
           main: dayWeather.weather[0].main.toLowerCase(),
           description: upperCaseFirstLetter(dayWeather.weather[0].description),
           temp: `${Math.floor(dayWeather.temp.day).toString()}°`,
@@ -206,8 +193,6 @@ export const WeatherProvider: React.FC = ({ children }) => {
         hourly: newHourlyWeather,
         daily: newDailyWeather,
       });
-
-      console.log(data);
     } catch (e) {
       console.error(e);
       throw new Error('Não foi possível buscar a temperatura');
@@ -234,7 +219,6 @@ export const WeatherProvider: React.FC = ({ children }) => {
         await getWeather();
       }
 
-      console.log(data.current);
       setLoading(false);
     }
 
