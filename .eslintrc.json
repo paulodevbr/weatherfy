@@ -38,6 +38,7 @@
     "no-unused-expressions": "off",
     "no-use-before-define": "off",
     "prettier/prettier": "error",
+    "camelcase": "off",
     "import/extensions": [
       "error",
       "ignorePackages",

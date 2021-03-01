@@ -53,10 +53,10 @@ export const LocationProvider: React.FC = ({ children }) => {
       setInit(true);
       loadStorageData();
     }
-  });
+  }, [init, setInit]);
 
   const getCurrentLocation = useCallback(async () => {
-    Geolocation.getCurrentPosition(async (info: InfoCurrentLocation) => {
+    await Geolocation.getCurrentPosition(async (info: InfoCurrentLocation) => {
       const { latitude, longitude } = info.coords;
       setLoading(true);
 

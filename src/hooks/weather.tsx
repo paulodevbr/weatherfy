@@ -6,6 +6,7 @@ import React, {
   useEffect,
 } from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
+import { Alert } from 'react-native';
 import api, { getConfigApi } from '../services/api';
 import { useLocation } from './location';
 import upperCaseFirstLetter from '../utils/upperCaseFirstLetter';
@@ -24,18 +25,21 @@ export interface Weather {
   feelsLike: string;
   tempMin: string;
   tempMax: string;
-  windSpeed: number;
-  humidity: number;
+  windSpeed: string;
+  humidity: string;
 }
 
 interface WeatherLocation extends Weather {
+  latitude: number;
+  longitude: number;
   city: string;
 }
 
-interface WeatherDaily extends Weather {
+export interface WeatherDaily extends Weather {
   tempNight: string;
   tempEvening: string;
   tempMorning: string;
+  pressure: string;
 }
 
 interface WeatherLocationResponse {
@@ -98,6 +102,7 @@ interface WeatherResponse {
     }[];
     humidity: number;
     wind_speed: number;
+    pressure: number;
   }[];
 }
 
@@ -141,6 +146,8 @@ export const WeatherProvider: React.FC = ({ children }) => {
       const currentWeather = current.weather[0];
 
       const newCurrentWeather: WeatherLocation = {
+        latitude: location.latitude,
+        longitude: location.longitude,
         city: weatherLocationResponse.name,
         time: Date.now(),
         main: currentWeather.main.toLowerCase(),
@@ -149,8 +156,8 @@ export const WeatherProvider: React.FC = ({ children }) => {
         tempMax: `${Math.floor(daily[0].temp.max).toString()}°`,
         tempMin: `${Math.floor(daily[0].temp.min).toString()}°`,
         feelsLike: `${Math.floor(current.feels_like).toString()}°`,
-        windSpeed: current.wind_speed,
-        humidity: current.humidity,
+        windSpeed: `${Math.floor(current.wind_speed).toString()} km/h`,
+        humidity: `${Math.floor(current.humidity).toString()} %`,
       };
 
       const newHourlyWeather: Weather[] = hourly.map(hourWeather => ({
@@ -161,8 +168,8 @@ export const WeatherProvider: React.FC = ({ children }) => {
         tempMax: `${Math.floor(hourWeather.temp_max).toString()}°`,
         tempMin: `${Math.floor(hourWeather.temp_min).toString()}°`,
         feelsLike: `${Math.floor(hourWeather.feels_like).toString()}°`,
-        windSpeed: hourWeather.wind_speed,
-        humidity: Math.floor(hourWeather.humidity),
+        windSpeed: `${Math.floor(hourWeather.wind_speed).toString()} km/h`,
+        humidity: `${Math.floor(hourWeather.humidity).toString()} %`,
       }));
 
       const newDailyWeather: WeatherDaily[] = daily
@@ -175,8 +182,9 @@ export const WeatherProvider: React.FC = ({ children }) => {
           tempMax: `${Math.floor(dayWeather.temp.max).toString()}°`,
           tempMin: `${Math.floor(dayWeather.temp.min).toString()}°`,
           feelsLike: `${Math.floor(dayWeather.temp.day).toString()}°`,
-          windSpeed: dayWeather.wind_speed,
-          humidity: dayWeather.humidity,
+          windSpeed: `${Math.floor(dayWeather.wind_speed).toString()} km/h`,
+          humidity: `${Math.floor(dayWeather.humidity).toString()} %`,
+          pressure: `${Math.floor(dayWeather.pressure).toString()} hPa`,
           tempEvening: `${Math.floor(dayWeather.temp.eve).toString()}°`,
           tempMorning: `${Math.floor(dayWeather.temp.morn).toString()}°`,
           tempNight: `${Math.floor(dayWeather.temp.night).toString()}°`,
@@ -194,12 +202,14 @@ export const WeatherProvider: React.FC = ({ children }) => {
         daily: newDailyWeather,
       });
     } catch (e) {
-      console.error(e);
-      throw new Error('Não foi possível buscar a temperatura');
+      Alert.alert(
+        'Sem conexão',
+        'Não foi possível buscar o clima, usando dados offline',
+      );
     } finally {
       setLoading(false);
     }
-  }, [data, currentLocation]);
+  }, [currentLocation]);
 
   useEffect(() => {
     async function loadStorageData(): Promise<void> {
@@ -210,11 +220,27 @@ export const WeatherProvider: React.FC = ({ children }) => {
       ]);
 
       if (current[1] && hourly[1] && daily[1]) {
-        setData({
-          current: JSON.parse(current[1]),
-          hourly: JSON.parse(hourly[1]),
-          daily: JSON.parse(daily[1]),
-        });
+        const currentWeather = JSON.parse(current[1]) as WeatherLocation;
+
+        const isDifferentLatitude =
+          Math.abs(
+            currentWeather.latitude - currentLocation.location.latitude,
+          ) > 1;
+
+        const isDifferentLongitude =
+          Math.abs(
+            currentWeather.longitude - currentLocation.location.longitude,
+          ) > 1;
+
+        if (isDifferentLatitude || isDifferentLongitude) {
+          await getWeather();
+        } else {
+          setData({
+            current: JSON.parse(current[1]),
+            hourly: JSON.parse(hourly[1]),
+            daily: JSON.parse(daily[1]),
+          });
+        }
       } else {
         await getWeather();
       }

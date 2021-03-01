@@ -15,7 +15,7 @@ import {
 } from './styles';
 import { colors } from '../../styles/colors';
 import { Row } from '../../components/Row';
-import { useWeather, Weather } from '../../hooks/weather';
+import { useWeather, WeatherDaily } from '../../hooks/weather';
 import getWeatherColor from '../../utils/getWeatherColor';
 import getWeatherIcon from '../../utils/getWeatherIcon';
 import { BrazilLocale } from '../../utils/BrazilLocale';
@@ -25,7 +25,7 @@ import { ListWeatherHourly } from '../../components/ListWeatherHourly';
 import TextSubtitle from '../../components/TextSubtitle';
 
 interface Props {
-  route: Route<'DayOfWeek', { weatherDay: Weather }>;
+  route: Route<'DayOfWeek', { weatherDay: WeatherDaily }>;
 }
 
 const DayOfWeek: React.FC<Props> = ({ route }) => {
@@ -107,8 +107,24 @@ const DayOfWeek: React.FC<Props> = ({ route }) => {
             />
           </ImgTemp>
         </CurrentWeatherView>
+        <Row full withSpaceBetween height={40}>
+          <Row width="30%">
+            <IconFeather name="wind" size={24} color="white" />
+            <TextSubtitle>{weatherDay.windSpeed}</TextSubtitle>
+          </Row>
+          <Row width="30%">
+            <IconFeather name="droplet" size={24} color="white" />
+            <TextSubtitle>{weatherDay.humidity}</TextSubtitle>
+          </Row>
+          <Row width="30%">
+            <IconFeather name="clock" size={24} color="white" />
+            <TextSubtitle>{weatherDay.pressure}</TextSubtitle>
+          </Row>
+        </Row>
+
         <ListWeatherHourly weatherByHour={hoursFromDay} />
-        <Row full withSpaceBetween height="100px">
+
+        <Row full center height="100px">
           <ActionButton onPress={() => goBack()}>
             <IconIonicons
               name="return-up-back-outline"

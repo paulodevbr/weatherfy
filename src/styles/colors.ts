@@ -5,7 +5,7 @@ export const colors = {
   clouds: ['#9dc5d4', '#52818f'],
   rainy: ['#aeaeae', '#404040'],
   thunderstorm: ['#727272', '#161616'],
-  snow: ['#bbd9d3', '#80948e'],
+  snow: ['#82e3c1', '#36b7bf'],
   moonNight: ['#525291', '#1d1b35'],
   cloudyNight: ['#56567c', '#272739'],
   rainyNight: ['#2b2b54', '#131330'],

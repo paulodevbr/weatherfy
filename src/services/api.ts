@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import { API_URL, API_TOKEN } from '@env';
 import { Location } from '../hooks/location';
 

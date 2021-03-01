@@ -1,7 +1,7 @@
 import styled from 'styled-components/native';
 import { Platform } from 'react-native';
 import React from 'react';
-import Button from '../../components/Button';
+import Button, { ButtonProps } from '../../components/Button';
 import TextSubtitle from '../../components/TextSubtitle';
 
 export const Container = styled.View`
@@ -58,7 +58,7 @@ export const HourText = styled(TextSubtitle)`
   opacity: 0.7;
 `;
 
-export const ActionButton: React.FC = ({ children, ...props }) => (
+export const ActionButton: React.FC<ButtonProps> = ({ children, ...props }) => (
   <Button
     {...props}
     style={{

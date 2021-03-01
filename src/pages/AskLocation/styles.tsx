@@ -1,5 +1,4 @@
 import styled from 'styled-components/native';
-import { getBottomSpace } from 'react-native-iphone-x-helper';
 import { Platform } from 'react-native';
 import Button from '../../components/Button';
 
