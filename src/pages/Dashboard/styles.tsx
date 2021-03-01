@@ -57,3 +57,17 @@ export const WeekDayText = styled.Text`
   color: #fff;
   width: 24%;
 `;
+
+export const ActionButton: React.FC<ButtonProps> = ({ children, ...props }) => (
+  <Button
+    {...props}
+    style={{
+      height: 50,
+      width: 50,
+      borderRadius: 50 / 2,
+      backgroundColor: 'rgba(255,255,255,0.3)',
+    }}
+  >
+    {children}
+  </Button>
+);
